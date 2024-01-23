@@ -1,11 +1,42 @@
-.profile-page-wrapper
+@import "src/Styles/variables.sass"
+
+.profile-wrapper
 	width: 100%
-	background: #fff
-	box-shadow: 0 4px 30px -10px rgba(0, 0, 0, 0.2)
-	border-radius: 15px
-	height: 500px
 	display: flex
-	justify-content: center
-	align-items: center
+	flex-direction: column
+	background: #fff
+	border-radius: 8px
 	padding: 20px
-	gap: 15px
+	gap: 30px
+
+	.user-avatar
+		width: 150px
+		height: 150px
+		border-radius: 50%
+		object-fit: cover
+
+	.user-info-wrapper
+		display: flex
+		flex-direction: column
+		gap: 15px
+
+		span
+			font-size: 24px
+
+		button
+			width: 180px
+			display: flex
+			justify-content: center
+			align-items: center
+			border: none
+			outline: none
+			cursor: pointer
+			color: #fff
+			background: $secondary
+			transition: 0.15s all ease
+			padding: 8px 16px
+			border-radius: 8px
+			font-size: 24px
+
+			&:hover
+				opaindicator: 0.8

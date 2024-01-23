@@ -1,53 +1,24 @@
 import "./IndicatorPage.sass"
-import {Dispatch, useEffect, useState} from "react";
+import {useEffect} from "react";
 import {Link, useParams} from "react-router-dom";
-import {iIndicatorsMock, requestTime} from "../../Consts";
-import {Indicator} from "../../Types";
-import mockImage from "/src/assets/mock.png"
+import {useIndicator} from "../../hooks/indicators/useIndicator";
 
-const IndicatorPage = ({ selectedIndicator, setSelectedIndicator }: { selectedIndicator:Indicator | undefined, setSelectedIndicator: Dispatch<Indicator| undefined>}) => {
+const IndicatorPage = () => {
 
     const { id } = useParams<{id: string}>();
-
-    const [isMock, setIsMock] = useState<boolean>(false);
-
+    
+    const {indicator, fetchIndicator} = useIndicator()
+    
     useEffect(() => {
-        fetchData()
+        id && fetchIndicator(id)
     }, [])
 
-    if (id == undefined){
-        return;
-    }
+    if (indicator == undefined) {
+        return (
+            <div>
 
-    const fetchData = async () => {
-
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/indicators/${id}`, {
-                method: "GET",
-                signal: AbortSignal.timeout(requestTime)
-            });
-
-            if (!response.ok)
-            {
-                CreateMock()
-                return;
-            }
-
-            const city: Indicator = await response.json()
-
-            setSelectedIndicator(city)
-
-            setIsMock(false)
-        } catch
-        {
-            CreateMock()
-        }
-
-    };
-
-    const CreateMock = () => {
-        setSelectedIndicator(iIndicatorsMock.find((service:Indicator) => service?.id == parseInt(id)))
-        setIsMock(true)
+            </div>
+        )
     }
 
     const img = `http://127.0.0.1:8000/api/indicators/${id}/image/`
@@ -61,7 +32,7 @@ const IndicatorPage = ({ selectedIndicator, setSelectedIndicator }: { selectedIn
 
             <div className="left">
 
-                <img src={isMock ? mockImage : img}  alt=""/>
+                <img src={img}  alt=""/>
 
             </div>
 
@@ -69,15 +40,27 @@ const IndicatorPage = ({ selectedIndicator, setSelectedIndicator }: { selectedIn
 
                 <div className="info-container">
 
-                    <h2 className="name">{selectedIndicator?.name}</h2>
+                    <h2 className="name">{indicator.name}</h2>
 
                     <br />
 
-                    <span className="description">{selectedIndicator?.description}</span>
+                    <span className="description">{indicator.description}</span>
 
                     <br />
 
-                    <span>Единицы измереня: {selectedIndicator?.type}</span>
+                    <span className="foundation_date">Год основания: {indicator.foundation_date}г</span>
+
+                    <br />
+
+                    <span className="grp">Население: {indicator.grp} млн</span>
+
+                    <br />
+
+                    <span className="square">Площадь: {indicator.square} км^2</span>
+
+                    <br />
+
+                    <span className="climate">Климат: {indicator.climate}</span>
 
                 </div>
 

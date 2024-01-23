@@ -2,33 +2,46 @@ import "./Breadcrumbs.sass"
 import { Link, useLocation } from "react-router-dom";
 import {FaChevronRight} from "react-icons/fa6";
 import {FaHome} from "react-icons/fa";
-import {Indicator} from "../../Types";
-import {Dispatch} from "react";
+import {useIndicator} from "../../hooks/indicators/useIndicator";
+import {useEstimate} from "../../hooks/estimates/useEstimate";
 
-const Breadcrumbs = ({ selectedIndicator, setSelectedIndicator }: { selectedIndicator:Indicator | undefined, setSelectedIndicator: Dispatch<Indicator | undefined> }) => {
+const Breadcrumbs = () => {
 
     const location = useLocation()
 
+    const {indicator, setIndicator} = useIndicator()
+
+    const { estimate } = useEstimate()
+
     let currentLink = ''
 
-    const topics: Record<string, string> = {
-        "indicators": "Показатели",
+    const resetSelectedIndicator = () => setIndicator(undefined)
+
+    const topics = {
+        "indicators": "Счётчики",
+        "estimates": "Рассчёты",
+        "home": "Главная",
+        "login": "Вход",
+        "register": "Регистрация",
         "profile": "Личный кабинет"
     }
 
-    const resetSelectedIndicator = () => setSelectedIndicator(undefined)
+    const exclude_topics = ["edit", "create"]
 
     const crumbs = location.pathname.split('/').filter(crumb => crumb !== '').map(crumb => {
 
         currentLink += `/${crumb}`
 
-        if (Object.keys(topics).find(x => x == crumb))
-        {
+        if (exclude_topics.find(x => x == crumb)) {
+            return
+        }
+
+        if (Object.keys(topics).find(x => x == crumb)) {
             return (
                 <div className={"crumb"} key={crumb}>
 
                     <Link to={currentLink} onClick={resetSelectedIndicator}>
-                        { (topics as never)[crumb] }
+                        { topics[crumb] }
                     </Link>
 
                     <FaChevronRight className={"chevron-icon"}/>
@@ -37,13 +50,30 @@ const Breadcrumbs = ({ selectedIndicator, setSelectedIndicator }: { selectedIndi
             )
         }
 
-        if (currentLink.match(new RegExp('indicators/(d*)')))
+        if (estimate && currentLink.match(new RegExp('estimates/(\d*)')))
+        {
+            const is_draft = estimate.status == 1
+
+            return (
+                <div className={"crumb"} key={crumb}>
+
+                    <Link to={currentLink}>
+                        {is_draft ? "Новый рассчёт" : `Рассчёт №${estimate.id}`}
+                    </Link>
+
+                    <FaChevronRight className={"chevron-icon"}/>
+
+                </div>
+            )
+        }
+
+        if (currentLink.match(new RegExp('indicators/(\d*)')))
         {
             return (
                 <div className={"crumb"} key={crumb}>
 
                     <Link to={currentLink}>
-                        { selectedIndicator?.name }
+                        {indicator?.name}
                     </Link>
 
                     <FaChevronRight className={"chevron-icon"}/>
